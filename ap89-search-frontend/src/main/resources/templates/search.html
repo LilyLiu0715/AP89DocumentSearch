@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>AP89 Document Search</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <style>
+    table {
+        border-collapse: collapse;
+    }
+    tr.field-boundary {
+        border-bottom: 1px dotted gray;
+    }
+    tr.result-boundary {
+        border-bottom: 1px solid black;
+    }
+    em {
+        background-color: yellow;
+    }
+    </style>
+</head>
+
+<a href="/">Try another query</a>
+
+<body>
+<h3 th:text="'Finished running query: ' + ${query}" />
+<h3>Results: </h3>
+<table>
+    <span th:each="result, rStat: ${results}">
+        <tr>
+            <td><b>Rank: </b><text th:text="${rStat.index} + ${startRank} + 1" /></td>
+            <td><b>DocNo: </b><text th:text="${result.displayDocNo()}" /></td>
+        </tr>
+        <tr class="field-boundary" />
+        <tr>
+            <td><b>Score: </b><text th:text="${result.displayScore()}" /></td>
+            <td><b>FileId: </b><text th:text="${result.displayFileId()}" /></td>
+        </tr>
+        <tr class="field-boundary" />
+        <tr th:each="head, hStat : ${result.displayHighlightedHead()}">
+            <td colspan="2"><b th:text="'Head ' + (${hStat.index} + 1) + ': '" /><text th:utext="${head}" /></td>
+        </tr>
+        <tr class="field-boundary" />
+        <tr th:each="byline, bStat : ${result.displayHighlightedByline()}">
+            <td colspan="2"><b th:text="'Byline ' + (${bStat.index} + 1) + ': '" /><text th:utext="${byline}" /></td>
+        </tr>
+        <tr class="field-boundary" />
+        <tr th:each="text, tStat : ${result.displayHighlightedText()}">
+            <td colspan="2" id="bottom-row"><b th:text="'Text ' + (${tStat.index} + 1) + ': '" /><text th:utext="${text}" /></td>
+        </tr>
+        <tr class="result-boundary" />
+    </span>
+</table>
+<a th:hidden="${startRank} - 10 < 0" th:href="@{/search(query=${query},startRank=(${startRank} - 10))}">Prev</a>
+<a th:hidden="${resultSize} < 10" th:href="@{/search(query=${query},startRank=${startRank} + 10)}">Next</a>
+
+</body>
+</html>
